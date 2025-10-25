@@ -1,0 +1,6 @@
+array:
+رنگ
+ساعت و تاریخ
+Note => text field
+Title => drop down
+اضافه بشه به json

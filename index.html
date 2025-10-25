@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pane — Image Annotation (Ellipses)</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+  </head>
+  <body>
+    <header class="toolbar">
+      <div class="group">
+        <label class="btn file">
+          انتخاب فایل
+          <input id="imageInput" type="file" accept="image/*" />
+        </label>
+        <input
+          id="imageUrl"
+          class="input"
+          type="url"
+          placeholder="URL تصویر…"
+        />
+        <button id="loadUrlBtn" class="btn">لود URL</button>
+        <label class="switch">
+          <input id="forceCors" type="checkbox" />
+          <span>اجبار CORS</span>
+        </label>
+      </div>
+      <div class="group">
+        <button id="clearBtn" class="btn danger">حذف همه</button>
+      </div>
+    </header>
+
+    <div id="errorBox" class="error" hidden></div>
+
+    <main class="wrap">
+      <div id="stage" class="stage">
+        <div id="dropHint" class="hint">
+          فایل تصویر را اینجا بکشید و رها کنید…
+        </div>
+        <img id="baseImage" alt="تصویر" />
+        <svg
+          id="overlay"
+          class="overlay"
+          aria-label="لایهٔ ترسیم"
+          tabindex="0"
+        ></svg>
+      </div>
+      <!-- زیرِ عکس: منو + textarea -->
+      <div id="underControls" class="under-image-controls">
+        <label class="control">
+          <span class="control-title">انتخاب گزینه</span>
+          <select id="annoSelect" class="input">
+            <option value="">— انتخاب کنید —</option>
+            <option value="alpha">Alpha</option>
+            <option value="bravo">Bravo</option>
+            <option value="charlie">Charlie</option>
+            <option value="delta">Delta</option>
+            <option value="echo">Echo</option>
+          </select>
+        </label>
+
+        <label class="control">
+          <span class="control-title">توضیحات</span>
+          <textarea
+            id="annoText"
+            class="input area"
+            placeholder="اینجا یادداشت بنویس…"
+          ></textarea>
+        </label>
+        <div class="row">
+          <button id="saveBtn" class="btn primary">ثبت</button>
+        </div>
+      </div>
+      <section class="side" hidden>
+        <h3>JSON</h3>
+        <pre id="jsonView" class="json"></pre>
+        <div class="row">
+          <button id="copyJsonBtn" class="btn">کپی JSON</button>
+        </div>
+
+        <h3>Import JSON</h3>
+        <textarea
+          id="jsonInput"
+          class="input area"
+          placeholder='[{"id":"...","type":"ellipse","nx":0.5,"ny":0.5,"nrx":0.1,"nry":0.08}]'
+        ></textarea>
+        <div class="row">
+          <button id="loadJsonBtn" class="btn">بارگذاری JSON</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="./main.js"></script>
+  </body>
+</html>

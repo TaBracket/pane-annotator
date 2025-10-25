@@ -1,0 +1,316 @@
+:root {
+  color-scheme: light dark;
+  --bg: canvas;
+  --text: canvastext;
+  --muted: color-mix(in oklab, var(--text), transparent 60%);
+  --line: color-mix(in oklab, var(--text), transparent 85%);
+  --accent: #2563eb;
+  --accent-2: #0a66ff;
+  --danger: #dc2626;
+  --surface: color-mix(in oklab, var(--bg), var(--text) 4%);
+  --shadow: 0 10px 30px #0005;
+  --radius: 12px;
+
+  /* تاکید انتخاب */
+  --select-stroke: #141414;
+  --select-glow: rgba(245, 158, 11, 0.55);
+}
+
+/* پایه */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ---------- Toolbar ---------- */
+.toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+.toolbar .group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ورودی‌ها و دکمه‌ها */
+.input {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 10px;
+  outline: none;
+  min-width: 220px;
+}
+.input:focus {
+  border-color: color-mix(in oklab, var(--accent), transparent 50%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent), transparent 85%);
+}
+.input.area {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.06s ease, filter 0.2s ease;
+}
+.btn:hover {
+  filter: brightness(1.04);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn.primary {
+  border-color: color-mix(in oklab, var(--accent), transparent 60%);
+  background: color-mix(in oklab, var(--accent), var(--bg) 75%);
+}
+.btn.danger {
+  border-color: color-mix(in oklab, var(--danger), transparent 60%);
+  background: color-mix(in oklab, var(--danger), var(--bg) 80%);
+  color: color-mix(in oklab, var(--danger), white 80%);
+}
+.btn.ghost {
+  background: transparent;
+}
+
+.file {
+  position: relative;
+  overflow: hidden;
+}
+.file input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.switch {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--muted);
+}
+.switch input {
+  transform: translateY(1px);
+}
+
+/* ---------- Layout ---------- */
+.wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 16px;
+}
+.wrap.has-side {
+  grid-template-columns: minmax(0, 1fr) 350px;
+}
+/* اگر سایدبار hidden شد، ستون دوم کاملاً حذف شود */
+.side[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 1000px) {
+  .wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Stage (پنل اصلی Pane) ---------- */
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--bg), var(--text) 2%);
+  overflow: hidden;
+}
+.stage.dragover {
+  outline: 2px dashed var(--accent);
+  outline-offset: 4px;
+}
+.hint {
+  position: absolute;
+  inset: 12px auto auto 12px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  z-index: 1;
+}
+
+#baseImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: color-mix(in oklab, var(--bg), var(--text) 1.5%);
+}
+
+/* لایهٔ SVG */
+.overlay {
+  touch-action: none; /* جلوگیری از اسکرول هنگام لمس و درگ */
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  cursor: crosshair; /* فضای خالی برای رسم */
+}
+
+/* ---------- Shapes ---------- */
+/* fill را JS تعیین می‌کند تا در حال رسم سیاه نشود */
+.ellipse-shape {
+  stroke: var(--accent-2);
+  stroke-width: 2;
+  cursor: grab; /* جابه‌جایی با درگ */
+}
+.ellipse-shape:active {
+  cursor: grabbing;
+}
+
+/* حین درگ: خط‌چین و هالهٔ ملایم */
+.ellipse-shape.dragging {
+  stroke-dasharray: 6 3;
+  filter: drop-shadow(
+    0 0 4px color-mix(in oklab, var(--accent-2), transparent 65%)
+  );
+}
+
+/* انتخاب‌شده: بدون هالهٔ نارنجی؛ خوانایی بالا */
+.ellipse-shape.is-selected {
+  stroke: #000;
+  stroke-width: 2.5;
+  filter: none;
+  fill-opacity: 0.6;
+}
+
+/* شماره داخل بیضی‌ها */
+.ellipse-label {
+  font: 12px/1.2 sans-serif;
+  text-anchor: middle;
+  dominant-baseline: central;
+  fill: #111;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3;
+  pointer-events: none; /* درگ روی خود بیضی باقی بماند */
+}
+
+/* هاور ملایم روی شکل */
+.ellipse-shape:hover:not(.dragging) {
+  filter: drop-shadow(
+    0 0 3px color-mix(in oklab, var(--accent-2), transparent 55%)
+  );
+}
+
+/* ---------- Side Panel (JSON) ---------- */
+.side {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: var(--surface);
+}
+.side h3 {
+  margin: 6px 0 8px;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.json {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 240px;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92rem;
+}
+.row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.row.end {
+  justify-content: flex-end;
+}
+
+/* ---------- Error ---------- */
+.error {
+  margin: 10px 16px 0;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in oklab, var(--danger), transparent 60%);
+  background: color-mix(in oklab, var(--danger), var(--bg) 85%);
+  color: color-mix(in oklab, var(--danger), white 75%);
+  border-radius: 10px;
+}
+
+/* ---------- Selection ---------- */
+::selection {
+  background: color-mix(in oklab, var(--accent), transparent 70%);
+}
+
+/* پیش‌فرض: بسته */
+.under-image-controls {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+/* وقتی پنل باید نمایش داده شود */
+.under-image-controls.is-open {
+  display: flex;
+}
+
+/* کنترل‌های داخلی */
+.under-image-controls .control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.under-image-controls .control-title {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.under-image-controls .input.area {
+  min-height: 72px;
+}
+
+@media (max-width: 600px) {
+  .under-image-controls {
+    max-width: 100%;
+  }
+}
